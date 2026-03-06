@@ -1,17 +1,37 @@
+/**
+ * index.js — UPDATED
+ * -------------------
+ * Added BrowserRouter at the TOP of the tree.
+ *
+ * WHY here and not inside App.js?
+ *   BrowserRouter provides the routing context.
+ *   Every component that uses useNavigate, useLocation,
+ *   <Routes>, <Route>, or <Link> MUST be a descendant
+ *   of BrowserRouter. Placing it here guarantees that
+ *   even App.js itself can use router hooks if needed.
+ *
+ * Render tree:
+ *   React.StrictMode
+ *     → BrowserRouter        ← NEW (provides routing context)
+ *       → ThemeProvider       (provides theme context)
+ *         → App
+ */
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container);
+
 root.render(
   <React.StrictMode>
-    <App />
+    {/* BrowserRouter wraps EVERYTHING so router hooks work everywhere */}
+    <BrowserRouter>
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
