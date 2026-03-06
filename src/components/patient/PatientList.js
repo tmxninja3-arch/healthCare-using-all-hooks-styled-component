@@ -1,64 +1,63 @@
-/**
- * PatientList.js
- * ---------------
- * Renders the patient grid or an empty-state message.
- *
- * Receives the already-filtered list from App so it
- * stays purely presentational.
- */
+
+import { Empty, Row, Col, Typography } from 'antd';
 import PatientCard from './PatientCard';
-import {
-  ListSection,
-  ListHeader,
-  ListTitle,
-  PatientCount,
-  PatientGrid,
-  EmptyMessage,
-} from '../../styles/PatientListStyles';
+
+const { Title, Text } = Typography;
 
 const PatientList = ({ patients, totalCount, onDeletePatient }) => {
-  // --- empty states ---
   if (totalCount === 0) {
     return (
-      <ListSection>
-        <EmptyMessage>
-          <span>🩺</span>
-          No patients yet. Add your first patient above!
-        </EmptyMessage>
-      </ListSection>
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description={
+          <Text type="secondary">
+            No patients yet. Add your first patient from the Dashboard!
+          </Text>
+        }
+        style={{ padding: '3rem 0' }}
+      />
     );
   }
 
   if (patients.length === 0) {
     return (
-      <ListSection>
-        <EmptyMessage>
-          <span>🔍</span>
-          No patients match your search criteria.
-        </EmptyMessage>
-      </ListSection>
+      <Empty
+        description={
+          <Text type="secondary">
+            No patients match your search criteria.
+          </Text>
+        }
+        style={{ padding: '3rem 0' }}
+      />
     );
   }
 
   return (
-    <ListSection>
-      <ListHeader>
-        <ListTitle>📋 Patient Records</ListTitle>
-        <PatientCount>
+    <div>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+        }}
+      >
+        <Title level={4} style={{ margin: 0 }}>
+          📋 Patient Records
+        </Title>
+        <Text type="secondary">
           Showing {patients.length} of {totalCount}
-        </PatientCount>
-      </ListHeader>
+        </Text>
+      </div>
 
-      <PatientGrid>
+      <Row gutter={[16, 16]}>
         {patients.map((patient) => (
-          <PatientCard
-            key={patient.id}
-            patient={patient}
-            onDelete={onDeletePatient}
-          />
+          <Col xs={24} sm={24} md={12} lg={8} key={patient.id}>
+            <PatientCard patient={patient} onDelete={onDeletePatient} />
+          </Col>
         ))}
-      </PatientGrid>
-    </ListSection>
+      </Row>
+    </div>
   );
 };
 

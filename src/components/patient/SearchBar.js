@@ -1,17 +1,9 @@
-/**
- * SearchBar.js
- * -------------
- * Text search + critical-filter toggle.
- *
- * Hooks demonstrated: (receives callbacks from parent,
- * keeps the component "dumb" / presentational)
- */
-import {
-  SearchContainer,
-  SearchTitle,
-  SearchInput,
-  FilterButton,
-} from '../../styles/SearchBarStyles';
+
+import { Input, Switch, Card, Space, Typography } from 'antd';
+import { AlertOutlined } from '@ant-design/icons';
+
+const { Search } = Input;
+const { Text } = Typography;
 
 const SearchBar = ({
   searchText,
@@ -20,24 +12,33 @@ const SearchBar = ({
   onToggleCriticalFilter,
 }) => {
   return (
-    <SearchContainer>
-      <SearchTitle>🔍 Search &amp; Filter</SearchTitle>
+    <Card title="🔍 Search & Filter" size="small">
+      <Space direction="vertical" style={{ width: '100%' }} size="middle">
+        {/* Search input */}
+        <Search
+          placeholder="Search patient by name…"
+          value={searchText}
+          onChange={(e) => onSearchChange(e.target.value)}
+          allowClear
+          size="large"
+        />
 
-      <SearchInput
-        type="text"
-        placeholder="Search patient by name…"
-        value={searchText}
-        onChange={(e) => onSearchChange(e.target.value)}
-      />
-
-      <FilterButton
-        type="button"
-        $active={criticalFilter}
-        onClick={onToggleCriticalFilter}
-      >
-        🚨 {criticalFilter ? 'Show All' : 'Critical Only'}
-      </FilterButton>
-    </SearchContainer>
+        {/* Critical filter toggle */}
+        <Space align="center">
+          <Switch
+            checked={criticalFilter}
+            onChange={onToggleCriticalFilter}
+            checkedChildren={<AlertOutlined />}
+            unCheckedChildren={<AlertOutlined />}
+          />
+          <Text type={criticalFilter ? 'danger' : 'secondary'}>
+            {criticalFilter
+              ? 'Showing Critical Only'
+              : 'Show All Patients'}
+          </Text>
+        </Space>
+      </Space>
+    </Card>
   );
 };
 

@@ -1,173 +1,189 @@
-/**
- * PatientForm.js
- * ---------------
- * Collects patient data, calculates BMI and
- * calls the parent's addPatient callback.
- *
- * Hooks demonstrated: useState, useRef, useEffect
- */
-import { useState, useRef, useEffect } from 'react';
-import {
-  FormContainer,
-  FormTitle,
-  FormGrid,
-  InputGroup,
-  Label,
-  Input,
-  SubmitButton,
-} from '../../styles/PatientFormStyles';
 
-// Initial (empty) form state
-const EMPTY_FORM = {
-  name: '',
-  age: '',
-  weight: '',
-  height: '',
-  heartRate: '',
-};
+import { useRef, useEffect } from 'react';
+import { Form, Input, InputNumber, Button, Card } from 'antd';
+import {
+  UserOutlined,
+  PlusOutlined,
+  HeartOutlined,
+} from '@ant-design/icons';
 
 const PatientForm = ({ onAddPatient }) => {
   /**
-   * useState – controlled inputs for every form field.
+   * Form.useForm() — antd hook
+   * Returns [form] — a form instance with methods like:
+   *   form.resetFields()     → clear all inputs
+   *   form.validateFields()  → trigger validation
+   *   form.setFieldsValue()  → set values programmatically
    */
-  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [form] = Form.useForm();
 
-  /**
-   * useRef – reference to the name input so we can
-   * auto-focus it on mount and after each submission.
-   */
   const nameInputRef = useRef(null);
 
-  /**
-   * useEffect – auto-focus the name input once the
-   * component mounts (empty dependency array).
-   */
   useEffect(() => {
     nameInputRef.current?.focus();
   }, []);
 
-  /** Generic change handler for all inputs */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  /** Calculate BMI: weight(kg) / (height(m))² */
   const calculateBMI = (weight, heightCm) => {
     const heightM = heightCm / 100;
     return (weight / (heightM * heightM)).toFixed(1);
   };
 
-  /** Form submission */
-  const handleSubmit = (e) => {
-    e.preventDefault(); // HTML5 validation has already passed
-
-    const { name, age, weight, height, heartRate } = formData;
-    const bmi = parseFloat(calculateBMI(Number(weight), Number(height)));
+  /**
+   * onFinish — called by antd Form ONLY when all rules pass
+   * Receives an object with all field values: { name, age, weight, height, heartRate }
+   * No need for e.preventDefault() — antd handles that.
+   */
+  const handleFinish = (values) => {
+    const { name, age, weight, height, heartRate } = values;
+    const bmi = parseFloat(calculateBMI(weight, height));
 
     const newPatient = {
-      id: Date.now(), // simple unique id
+      id: Date.now(),
       name: name.trim(),
-      age: Number(age),
-      weight: Number(weight),
-      height: Number(height),
-      heartRate: Number(heartRate),
+      age,
+      weight,
+      height,
+      heartRate,
       bmi,
       createdAt: new Date().toISOString(),
     };
 
     onAddPatient(newPatient);
 
-    // Reset form & re-focus name input
-    setFormData(EMPTY_FORM);
+    // Reset form using antd's form instance method
+    form.resetFields();
     nameInputRef.current?.focus();
   };
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      <FormTitle>➕ Add Patient</FormTitle>
-
-      <FormGrid>
-        {/* Name – full width, auto-focused */}
-        <InputGroup className="full-width">
-          <Label htmlFor="name">Patient Name</Label>
+    <Card title="➕ Add Patient" style={{ marginTop: 16 }}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+        requiredMark="optional"
+      >
+        {/* Name — full width */}
+        <Form.Item
+          label="Patient Name"
+          name="name"
+          rules={[
+            { required: true, message: 'Please enter patient name' },
+            { min: 2, message: 'Name must be at least 2 characters' },
+          ]}
+        >
           <Input
             ref={nameInputRef}
-            id="name"
-            name="name"
-            type="text"
             placeholder="John Doe"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            minLength={2}
+            prefix={<UserOutlined />}
+            size="large"
           />
-        </InputGroup>
+        </Form.Item>
 
-        <InputGroup>
-          <Label htmlFor="age">Age (years)</Label>
-          <Input
-            id="age"
+        {/* Two-column row using inline styles */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 16,
+          }}
+        >
+          <Form.Item
+            label="Age (years)"
             name="age"
-            type="number"
-            placeholder="35"
-            value={formData.age}
-            onChange={handleChange}
-            required
-            min={0}
-            max={150}
-          />
-        </InputGroup>
+            rules={[
+              { required: true, message: 'Required' },
+              {
+                type: 'number',
+                min: 0,
+                max: 150,
+                message: '0–150',
+              },
+            ]}
+          >
+            <InputNumber
+              placeholder="35"
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </Form.Item>
 
-        <InputGroup>
-          <Label htmlFor="weight">Weight (kg)</Label>
-          <Input
-            id="weight"
+          <Form.Item
+            label="Weight (kg)"
             name="weight"
-            type="number"
-            step="0.1"
-            placeholder="70"
-            value={formData.weight}
-            onChange={handleChange}
-            required
-            min={1}
-            max={500}
-          />
-        </InputGroup>
+            rules={[
+              { required: true, message: 'Required' },
+              {
+                type: 'number',
+                min: 1,
+                max: 500,
+                message: '1–500',
+              },
+            ]}
+          >
+            <InputNumber
+              placeholder="70"
+              step={0.1}
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </Form.Item>
 
-        <InputGroup>
-          <Label htmlFor="height">Height (cm)</Label>
-          <Input
-            id="height"
+          <Form.Item
+            label="Height (cm)"
             name="height"
-            type="number"
-            placeholder="175"
-            value={formData.height}
-            onChange={handleChange}
-            required
-            min={30}
-            max={300}
-          />
-        </InputGroup>
+            rules={[
+              { required: true, message: 'Required' },
+              {
+                type: 'number',
+                min: 30,
+                max: 300,
+                message: '30–300',
+              },
+            ]}
+          >
+            <InputNumber
+              placeholder="175"
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </Form.Item>
 
-        <InputGroup>
-          <Label htmlFor="heartRate">Heart Rate (bpm)</Label>
-          <Input
-            id="heartRate"
+          <Form.Item
+            label="Heart Rate (bpm)"
             name="heartRate"
-            type="number"
-            placeholder="80"
-            value={formData.heartRate}
-            onChange={handleChange}
-            required
-            min={20}
-            max={300}
-          />
-        </InputGroup>
+            rules={[
+              { required: true, message: 'Required' },
+              {
+                type: 'number',
+                min: 20,
+                max: 300,
+                message: '20–300',
+              },
+            ]}
+          >
+            <InputNumber
+              placeholder="80"
+              prefix={<HeartOutlined />}
+              style={{ width: '100%' }}
+              size="large"
+            />
+          </Form.Item>
+        </div>
 
-        <SubmitButton type="submit">Add Patient</SubmitButton>
-      </FormGrid>
-    </FormContainer>
+        <Form.Item>
+          <Button
+            type="primary"
+            htmlType="submit"
+            icon={<PlusOutlined />}
+            size="large"
+            block
+          >
+            Add Patient
+          </Button>
+        </Form.Item>
+      </Form>
+    </Card>
   );
 };
 
