@@ -1,26 +1,3 @@
-/**
- * Header.js — UPDATED WITH ANT DESIGN
- * --------------------------------------
- * NEW antd components used:
- *
- *   Button — replaces custom NavButton and ThemeButton
- *     → type="text" for navigation buttons (minimal style)
- *     → type="primary" for active navigation state
- *     → ghost prop for theme toggle (outlined on dark bg)
- *     → icon prop accepts antd icon components
- *
- *   Space — layout utility for grouping elements with gaps
- *     → Replaces manual flex + gap CSS
- *     → size prop controls spacing between children
- *
- *   Tooltip — shows hint on hover
- *     → Wraps the theme toggle button
- *     → Provides accessible title without custom CSS
- *
- * NEW antd icons used:
- *   DashboardOutlined, TeamOutlined, SunOutlined,
- *   MoonOutlined, MedicineBoxOutlined
- */
 import { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button, Space, Tooltip } from 'antd';

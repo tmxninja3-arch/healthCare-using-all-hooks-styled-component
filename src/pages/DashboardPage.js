@@ -1,10 +1,3 @@
-/**
- * DashboardPage.js — UPDATED
- * ----------------------------
- * Uses antd Typography for page title/description.
- * Child components (DashboardStats, PatientForm) now
- * use antd internally.
- */
 import { Typography } from 'antd';
 import DashboardStats from '../components/dashboard/DashboardStats';
 import PatientForm from '../components/patient/PatientForm';
@@ -18,6 +11,12 @@ const DashboardPage = ({
   averageBMI,
   onAddPatient,
 }) => {
+
+
+  console.log("Total Patients:", totalPatients);
+  console.log("Critical Patients:", criticalCount);
+  console.log("Avg BMI:", averageBMI);
+  
   return (
     <PageWrapper>
       <Title level={2}>📊 Dashboard Overview</Title>

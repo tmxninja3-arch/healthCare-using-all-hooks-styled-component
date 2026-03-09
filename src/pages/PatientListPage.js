@@ -37,6 +37,8 @@ const PatientListPage = ({ patients, onDeletePatient }) => {
     setCriticalFilter((prev) => !prev);
   }, []);
 
+
+  
   return (
     <PageWrapper>
       <Title level={2}>
